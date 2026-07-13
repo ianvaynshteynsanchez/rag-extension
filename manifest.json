@@ -1,10 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Knowledge Base Assistant",
+  "name": "Hera Health Solutions Internal Knowledge Base",
   "version": "1.0",
-  "description": "Query your internal knowledge base",
+  "description": "Internal knowledge base assistant for Hera Health Solutions employees",
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icon128.png"
+    }
   },
   "permissions": [],
   "host_permissions": [
