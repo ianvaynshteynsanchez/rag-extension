@@ -46,7 +46,16 @@ saveKeyBtn.addEventListener("click", () => {
   }
 });
 
-function addMessage(text, type, sources) {
+function saveHistory(history) {
+  localStorage.setItem("rag_chat_history", JSON.stringify(history));
+}
+
+function loadHistory() {
+  const raw = localStorage.getItem("rag_chat_history");
+  return raw ? JSON.parse(raw) : [];
+}
+
+function addMessageToDOM(text, type, sources, time) {
   const msg = document.createElement("div");
   msg.className = `msg ${type}`;
 
@@ -74,14 +83,13 @@ function addMessage(text, type, sources) {
     msg.appendChild(sourcesDiv);
   }
 
-  const time = document.createElement("div");
-  time.className = "time";
-  time.textContent = getTime();
-  msg.appendChild(time);
+  const timeDiv = document.createElement("div");
+  timeDiv.className = "time";
+  timeDiv.textContent = time || getTime();
+  msg.appendChild(timeDiv);
 
   messages.appendChild(msg);
   messages.scrollTop = messages.scrollHeight;
-  return msg;
 }
 
 function addLoading() {
@@ -99,6 +107,24 @@ function addLoading() {
   return msg;
 }
 
+function renderHistory() {
+  const history = loadHistory();
+  if (history.length === 0) return;
+  const divider = document.createElement("div");
+  divider.className = "divider";
+  divider.textContent = "Previous conversation";
+  messages.appendChild(divider);
+  history.forEach(item => {
+    addMessageToDOM(item.text, item.type, item.sources, item.time);
+  });
+  const todayDivider = document.createElement("div");
+  todayDivider.className = "divider";
+  todayDivider.textContent = "Today";
+  messages.appendChild(todayDivider);
+}
+
+renderHistory();
+
 askBtn.addEventListener("click", sendQuestion);
 questionInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
@@ -114,12 +140,17 @@ async function sendQuestion() {
   if (!question) return;
 
   if (!apiKey) {
-    addMessage("Please save your API key first.", "bot");
+    addMessageToDOM("Please save your API key first.", "bot");
     return;
   }
 
-  addMessage(question, "user");
+  const time = getTime();
+  addMessageToDOM(question, "user", null, time);
   questionInput.value = "";
+
+  const history = loadHistory();
+  history.push({ text: question, type: "user", sources: null, time });
+  saveHistory(history);
 
   const loader = addLoading();
 
@@ -136,15 +167,19 @@ async function sendQuestion() {
     loader.remove();
 
     if (response.status === 401) {
-      addMessage("Invalid API key. Please check and try again.", "bot");
+      addMessageToDOM("Invalid API key. Please check and try again.", "bot");
       return;
     }
 
     const data = await response.json();
-    addMessage(data.answer, "bot", data.sources);
+    const answerTime = getTime();
+    addMessageToDOM(data.answer, "bot", data.sources, answerTime);
+
+    history.push({ text: data.answer, type: "bot", sources: data.sources, time: answerTime });
+    saveHistory(history);
 
   } catch (err) {
     loader.remove();
-    addMessage("Could not connect to the knowledge base. Try again.", "bot");
+    addMessageToDOM("Could not connect to the knowledge base. Try again.", "bot");
   }
 }
