@@ -1,0 +1,40 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f2044; width: 380px; min-height: 580px; }
+.ext { width: 380px; height: 580px; background: #0f2044; display: flex; flex-direction: column; overflow: hidden; }
+.header { padding: 14px 16px; border-bottom: 0.5px solid #1e3a6e; display: flex; align-items: center; gap: 10px; background: #0a1a38; }
+.logo-wrap { width: 36px; height: 36px; border-radius: 10px; background: #1a3060; display: flex; align-items: center; justify-content: center; }
+.header-text { flex: 1; }
+.header-title { font-size: 14px; font-weight: 600; color: #e8f0fe; letter-spacing: 0.01em; }
+.header-sub { font-size: 11px; color: #7a9fd4; margin-top: 1px; }
+.live-badge { font-size: 10px; padding: 3px 8px; border-radius: 20px; background: rgba(74,222,128,0.15); color: #4ade80; font-weight: 500; border: 0.5px solid rgba(74,222,128,0.3); }
+.key-row { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #0a1a38; border-bottom: 0.5px solid #1e3a6e; }
+.key-row span { font-size: 11px; color: #7a9fd4; flex: 1; font-family: monospace; }
+.key-level { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(99,179,237,0.15); color: #63b3ed; font-weight: 600; border: 0.5px solid rgba(99,179,237,0.3); }
+.messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: #1e3a6e transparent; }
+.divider { text-align: center; font-size: 10px; color: #3d5a8a; margin: 4px 0; }
+.msg { display: flex; flex-direction: column; gap: 4px; }
+.msg.user { align-items: flex-end; }
+.msg.bot { align-items: flex-start; }
+.bot-label { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+.bot-avatar { width: 20px; height: 20px; border-radius: 50%; background: #1a3060; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #63b3ed; }
+.bot-name { font-size: 11px; color: #7a9fd4; font-weight: 500; }
+.bubble { max-width: 88%; padding: 10px 13px; border-radius: 12px; font-size: 13px; line-height: 1.55; }
+.msg.user .bubble { background: #2563eb; color: #e8f0fe; border-bottom-right-radius: 3px; }
+.msg.bot .bubble { background: #152e5e; border: 0.5px solid #1e3a6e; color: #d0e4ff; border-bottom-left-radius: 3px; }
+.sources { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.source-tag { font-size: 10px; padding: 2px 7px; background: rgba(99,179,237,0.1); color: #63b3ed; border-radius: 20px; border: 0.5px solid rgba(99,179,237,0.25); }
+.time { font-size: 10px; color: #3d5a8a; padding: 0 3px; }
+.loading .bubble { color: #7a9fd4; font-style: italic; }
+.input-area { padding: 10px 14px 14px; border-top: 0.5px solid #1e3a6e; background: #0a1a38; display: flex; flex-direction: column; gap: 8px; }
+.key-input-row { display: flex; gap: 8px; }
+.key-input-row input { flex: 1; background: #152e5e; border: 0.5px solid #1e3a6e; border-radius: 8px; padding: 7px 10px; font-size: 12px; color: #d0e4ff; outline: none; font-family: monospace; }
+.key-input-row input::placeholder { color: #3d5a8a; }
+.key-input-row button { padding: 7px 14px; background: #1e3a6e; border: 0.5px solid #2563eb; border-radius: 8px; color: #63b3ed; font-size: 12px; font-weight: 500; cursor: pointer; }
+.key-input-row button:hover { background: #2563eb; color: #e8f0fe; }
+.input-row { display: flex; gap: 8px; align-items: flex-end; }
+.input-wrap { flex: 1; background: #152e5e; border: 0.5px solid #1e3a6e; border-radius: 10px; padding: 9px 12px; }
+textarea { width: 100%; font-size: 13px; color: #d0e4ff; background: transparent; border: none; outline: none; resize: none; font-family: inherit; line-height: 1.4; height: 36px; }
+textarea::placeholder { color: #3d5a8a; }
+.send-btn { width: 36px; height: 36px; border-radius: 9px; background: #2563eb; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.send-btn:hover { background: #1d4ed8; }
+.error-bubble { background: rgba(220,38,38,0.15); border: 0.5px solid rgba(220,38,38,0.3); color: #fca5a5; padding: 8px 12px; border-radius: 8px; font-size: 12px; }

@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Knowledge Base Assistant",
+  "version": "1.0",
+  "description": "Query your internal knowledge base",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [],
+  "host_permissions": [
+    "https://rag-knowledge-base-ecjf.onrender.com/*"
+  ]
+}
