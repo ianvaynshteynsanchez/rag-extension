@@ -5,7 +5,45 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="ext">
+
+  <!-- Login Screen -->
+  <div class="ext" id="login-screen">
+    <div class="login-wrap">
+      <div class="logo-section">
+        <div class="logo-circle">
+          <svg viewBox="0 0 100 100" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
+            <g fill="none" stroke="#63b3ed" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M50 80 C50 80 20 65 20 40 C20 28 30 20 40 22 C44 23 48 26 50 30 C52 26 56 23 60 22 C70 20 80 28 80 40 C80 65 50 80 50 80Z"/>
+              <path d="M50 80 C50 80 35 60 35 45 C35 37 42 32 50 35 C58 32 65 37 65 45 C65 60 50 80 50 80Z"/>
+              <path d="M50 35 L50 80"/>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <div class="company-name">Hera Health Solutions</div>
+          <div class="company-sub">Internal Knowledge Base</div>
+        </div>
+      </div>
+
+      <div class="form">
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="username" placeholder="Enter your username" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Enter your password" />
+        </div>
+        <div class="error hidden" id="login-error">Invalid username or password</div>
+        <button class="login-btn" id="login-btn">Sign in</button>
+      </div>
+
+      <div class="footer">Contact IT for access credentials</div>
+    </div>
+  </div>
+
+  <!-- Chat Screen -->
+  <div class="ext hidden" id="chat-screen">
     <div class="header">
       <div class="logo-wrap">
         <svg viewBox="0 0 100 100" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
@@ -18,15 +56,18 @@
       </div>
       <div class="header-text">
         <div class="header-title">Hera Health</div>
-        <div class="header-sub">Internal knowledge base</div>
+        <div class="header-sub" id="header-sub">Internal knowledge base</div>
       </div>
-      <div class="live-badge">● Live</div>
+      <div class="header-right">
+        <div class="live-badge">● Live</div>
+        <button class="logout-btn" id="logout-btn">Sign out</button>
+      </div>
     </div>
 
-    <div class="key-row" id="key-row">
+    <div class="key-row">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7a9fd4" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      <span id="key-display">No key saved</span>
-      <div class="key-level" id="key-level">—</div>
+      <span id="username-display">—</span>
+      <div class="key-level" id="level-display">—</div>
     </div>
 
     <div class="messages" id="messages">
@@ -42,10 +83,6 @@
     </div>
 
     <div class="input-area">
-      <div class="key-input-row" id="key-input-row">
-        <input type="password" id="api-key" placeholder="Enter your API key..." />
-        <button id="save-key-btn">Save</button>
-      </div>
       <div class="input-row">
         <div class="input-wrap">
           <textarea id="question" placeholder="Ask a question..."></textarea>
@@ -56,6 +93,7 @@
       </div>
     </div>
   </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

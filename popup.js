@@ -1,19 +1,19 @@
-const API_URL = "https://rag-knowledge-base-ecjf.onrender.com/ask";
+const API_BASE = "https://rag-knowledge-base-ecjf.onrender.com";
+const LEVEL_NAMES = { 1: "Staff", 2: "Manager", 3: "Admin" };
 
-const LEVEL_NAMES = {
-  "staff-key-123": "Staff",
-  "manager-key-456": "Manager",
-  "admin-key-789": "Admin"
-};
-
-const apiKeyInput = document.getElementById("api-key");
-const saveKeyBtn = document.getElementById("save-key-btn");
+const loginScreen = document.getElementById("login-screen");
+const chatScreen = document.getElementById("chat-screen");
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("login-btn");
+const loginError = document.getElementById("login-error");
+const logoutBtn = document.getElementById("logout-btn");
 const questionInput = document.getElementById("question");
 const askBtn = document.getElementById("ask-btn");
 const messages = document.getElementById("messages");
-const keyDisplay = document.getElementById("key-display");
-const keyLevel = document.getElementById("key-level");
-const keyInputRow = document.getElementById("key-input-row");
+const usernameDisplay = document.getElementById("username-display");
+const levelDisplay = document.getElementById("level-display");
+const headerSub = document.getElementById("header-sub");
 
 function getTime() {
   return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -21,29 +21,71 @@ function getTime() {
 
 document.getElementById("welcome-time").textContent = getTime();
 
-function updateKeyDisplay(key) {
-  if (key) {
-    keyDisplay.textContent = key;
-    keyLevel.textContent = LEVEL_NAMES[key] || "Unknown";
-    keyInputRow.style.display = "none";
-  } else {
-    keyDisplay.textContent = "No key saved";
-    keyLevel.textContent = "—";
-    keyInputRow.style.display = "flex";
-  }
+function showChat(session) {
+  loginScreen.classList.add("hidden");
+  chatScreen.classList.remove("hidden");
+  usernameDisplay.textContent = session.username;
+  levelDisplay.textContent = LEVEL_NAMES[session.clearance_level] || "Staff";
+  headerSub.textContent = `Signed in as ${session.username}`;
+  renderHistory();
 }
 
-const savedKey = localStorage.getItem("rag_api_key");
-updateKeyDisplay(savedKey);
+function showLogin() {
+  chatScreen.classList.add("hidden");
+  loginScreen.classList.remove("hidden");
+}
 
-saveKeyBtn.addEventListener("click", () => {
-  const key = apiKeyInput.value.trim();
-  if (key) {
-    localStorage.setItem("rag_api_key", key);
-    updateKeyDisplay(key);
-    saveKeyBtn.textContent = "Saved!";
-    setTimeout(() => saveKeyBtn.textContent = "Save", 1500);
+const session = JSON.parse(localStorage.getItem("rag_session") || "null");
+if (session && session.token) {
+  showChat(session);
+} else {
+  showLogin();
+}
+
+loginBtn.addEventListener("click", async () => {
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value.trim();
+  if (!username || !password) return;
+  loginBtn.textContent = "Signing in...";
+  loginError.classList.add("hidden");
+  try {
+    const response = await fetch(`${API_BASE}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+    if (response.status === 401) {
+      loginError.classList.remove("hidden");
+      loginBtn.textContent = "Sign in";
+      return;
+    }
+    const data = await response.json();
+    const session = { token: data.token, username: data.username, clearance_level: data.clearance_level };
+    localStorage.setItem("rag_session", JSON.stringify(session));
+    loginBtn.textContent = "Sign in";
+    showChat(session);
+  } catch (err) {
+    loginError.textContent = "Could not connect. Try again.";
+    loginError.classList.remove("hidden");
+    loginBtn.textContent = "Sign in";
   }
+});
+
+passwordInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") loginBtn.click();
+});
+
+logoutBtn.addEventListener("click", async () => {
+  const session = JSON.parse(localStorage.getItem("rag_session") || "null");
+  if (session) {
+    await fetch(`${API_BASE}/logout`, {
+      method: "POST",
+      headers: { "x-session-token": session.token }
+    }).catch(() => {});
+  }
+  localStorage.removeItem("rag_session");
+  localStorage.removeItem("rag_chat_history");
+  showLogin();
 });
 
 function saveHistory(history) {
@@ -58,19 +100,16 @@ function loadHistory() {
 function addMessageToDOM(text, type, sources, time) {
   const msg = document.createElement("div");
   msg.className = `msg ${type}`;
-
   if (type === "bot") {
     const label = document.createElement("div");
     label.className = "bot-label";
     label.innerHTML = `<div class="bot-avatar">✦</div><span class="bot-name">Hera Assistant</span>`;
     msg.appendChild(label);
   }
-
   const bubble = document.createElement("div");
   bubble.className = "bubble";
   bubble.textContent = text;
   msg.appendChild(bubble);
-
   if (sources && sources.length > 0) {
     const sourcesDiv = document.createElement("div");
     sourcesDiv.className = "sources";
@@ -82,12 +121,10 @@ function addMessageToDOM(text, type, sources, time) {
     });
     msg.appendChild(sourcesDiv);
   }
-
   const timeDiv = document.createElement("div");
   timeDiv.className = "time";
   timeDiv.textContent = time || getTime();
   msg.appendChild(timeDiv);
-
   messages.appendChild(msg);
   messages.scrollTop = messages.scrollHeight;
 }
@@ -114,16 +151,12 @@ function renderHistory() {
   divider.className = "divider";
   divider.textContent = "Previous conversation";
   messages.appendChild(divider);
-  history.forEach(item => {
-    addMessageToDOM(item.text, item.type, item.sources, item.time);
-  });
+  history.forEach(item => addMessageToDOM(item.text, item.type, item.sources, item.time));
   const todayDivider = document.createElement("div");
   todayDivider.className = "divider";
   todayDivider.textContent = "Today";
   messages.appendChild(todayDivider);
 }
-
-renderHistory();
 
 askBtn.addEventListener("click", sendQuestion);
 questionInput.addEventListener("keydown", (e) => {
@@ -135,49 +168,35 @@ questionInput.addEventListener("keydown", (e) => {
 
 async function sendQuestion() {
   const question = questionInput.value.trim();
-  const apiKey = localStorage.getItem("rag_api_key");
-
-  if (!question) return;
-
-  if (!apiKey) {
-    addMessageToDOM("Please save your API key first.", "bot");
-    return;
-  }
-
+  const session = JSON.parse(localStorage.getItem("rag_session") || "null");
+  if (!question || !session) return;
   const time = getTime();
   addMessageToDOM(question, "user", null, time);
   questionInput.value = "";
-
   const history = loadHistory();
   history.push({ text: question, type: "user", sources: null, time });
   saveHistory(history);
-
   const loader = addLoading();
-
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(`${API_BASE}/ask`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey
+        "x-session-token": session.token
       },
       body: JSON.stringify({ question })
     });
-
     loader.remove();
-
     if (response.status === 401) {
-      addMessageToDOM("Invalid API key. Please check and try again.", "bot");
+      localStorage.removeItem("rag_session");
+      showLogin();
       return;
     }
-
     const data = await response.json();
     const answerTime = getTime();
     addMessageToDOM(data.answer, "bot", data.sources, answerTime);
-
     history.push({ text: data.answer, type: "bot", sources: data.sources, time: answerTime });
     saveHistory(history);
-
   } catch (err) {
     loader.remove();
     addMessageToDOM("Could not connect to the knowledge base. Try again.", "bot");
