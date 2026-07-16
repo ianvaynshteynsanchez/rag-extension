@@ -114,16 +114,19 @@ function loadHistory(username) {
 function addMessageToDOM(text, type, sources, time) {
   const msg = document.createElement("div");
   msg.className = `msg ${type}`;
+
   if (type === "bot") {
     const label = document.createElement("div");
     label.className = "bot-label";
     label.innerHTML = `<div class="bot-avatar">✦</div><span class="bot-name">Hera Assistant</span>`;
     msg.appendChild(label);
   }
+
   const bubble = document.createElement("div");
   bubble.className = "bubble";
   bubble.textContent = text;
   msg.appendChild(bubble);
+
   if (sources && sources.length > 0) {
     const sourcesDiv = document.createElement("div");
     sourcesDiv.className = "sources";
@@ -135,10 +138,29 @@ function addMessageToDOM(text, type, sources, time) {
     });
     msg.appendChild(sourcesDiv);
   }
+
+  if (type === "bot" && text.length > 10) {
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "copy-btn";
+    copyBtn.textContent = "Copy answer";
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.textContent = "Copied!";
+        copyBtn.classList.add("copied");
+        setTimeout(() => {
+          copyBtn.textContent = "Copy answer";
+          copyBtn.classList.remove("copied");
+        }, 2000);
+      });
+    });
+    msg.appendChild(copyBtn);
+  }
+
   const timeDiv = document.createElement("div");
   timeDiv.className = "time";
   timeDiv.textContent = time || getTime();
   msg.appendChild(timeDiv);
+
   messages.appendChild(msg);
   messages.scrollTop = messages.scrollHeight;
 }
