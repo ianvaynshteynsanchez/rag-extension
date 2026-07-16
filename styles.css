@@ -53,3 +53,13 @@ textarea::placeholder { color: #3d5a8a; }
 .copy-btn { font-size: 10px; color: #3d5a8a; background: none; border: 0.5px solid #1e3a6e; border-radius: 4px; padding: 2px 8px; cursor: pointer; margin-top: 4px; align-self: flex-start; }
 .copy-btn:hover { color: #63b3ed; border-color: rgba(99,179,237,0.3); }
 .copy-btn.copied { color: #4ade80; border-color: rgba(74,222,128,0.3); }
+.clear-btn { font-size: 10px; color: #3d5a8a; background: none; border: none; cursor: pointer; padding: 0; }
+.clear-btn:hover { color: #f87171; }
+.suggestions { display: flex; flex-direction: column; gap: 6px; padding: 4px 0; }
+.suggestion-btn { background: #0a1a38; border: 0.5px solid #1e3a6e; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #7a9fd4; cursor: pointer; text-align: left; }
+.suggestion-btn:hover { border-color: #2563eb; color: #d0e4ff; }
+@keyframes dot-bounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-4px); } }
+.dots { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+.dots span { width: 6px; height: 6px; background: #7a9fd4; border-radius: 50%; animation: dot-bounce 1.2s infinite; }
+.dots span:nth-child(2) { animation-delay: 0.2s; }
+.dots span:nth-child(3) { animation-delay: 0.4s; }

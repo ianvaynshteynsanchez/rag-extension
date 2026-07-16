@@ -60,7 +60,10 @@
       </div>
       <div class="header-right">
         <div class="live-badge">● Live</div>
-        <button class="logout-btn" id="logout-btn">Sign out</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="clear-btn" id="clear-btn">Clear chat</button>
+          <button class="logout-btn" id="logout-btn">Sign out</button>
+        </div>
       </div>
     </div>
 
@@ -91,6 +94,13 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8f0fe" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
         </button>
       </div>
+      <div class="change-pw-section" id="change-pw-section" style="display:none;">
+        <input class="form-input" type="password" id="old-pw" placeholder="Current password" style="margin-bottom:6px;" />
+        <input class="form-input" type="password" id="new-pw" placeholder="New password" style="margin-bottom:6px;" />
+        <button class="btn-change-pw" id="submit-pw-btn">Update password</button>
+        <div id="pw-msg" style="font-size:11px;margin-top:6px;display:none;"></div>
+      </div>
+      <button class="change-pw-toggle" id="change-pw-toggle">Change password</button>
     </div>
   </div>
 
