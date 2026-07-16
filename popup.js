@@ -27,12 +27,23 @@ function showChat(session) {
   usernameDisplay.textContent = session.username;
   levelDisplay.textContent = LEVEL_NAMES[session.clearance_level] || "Staff";
   headerSub.textContent = `Signed in as ${session.username}`;
-  renderHistory();
+  renderHistory(session.username);
 }
 
 function showLogin() {
   chatScreen.classList.add("hidden");
   loginScreen.classList.remove("hidden");
+  messages.innerHTML = `
+    <div class="divider">Today</div>
+    <div class="msg bot">
+      <div class="bot-label">
+        <div class="bot-avatar">✦</div>
+        <span class="bot-name">Hera Assistant</span>
+      </div>
+      <div class="bubble">Hi! Ask me anything about company policies, SOPs, or internal documents.</div>
+      <div class="time">${getTime()}</div>
+    </div>
+  `;
 }
 
 const session = JSON.parse(localStorage.getItem("rag_session") || "null");
@@ -84,16 +95,19 @@ logoutBtn.addEventListener("click", async () => {
     }).catch(() => {});
   }
   localStorage.removeItem("rag_session");
-  localStorage.removeItem("rag_chat_history");
   showLogin();
 });
 
-function saveHistory(history) {
-  localStorage.setItem("rag_chat_history", JSON.stringify(history));
+function historyKey(username) {
+  return `rag_chat_history_${username}`;
 }
 
-function loadHistory() {
-  const raw = localStorage.getItem("rag_chat_history");
+function saveHistory(username, history) {
+  localStorage.setItem(historyKey(username), JSON.stringify(history));
+}
+
+function loadHistory(username) {
+  const raw = localStorage.getItem(historyKey(username));
   return raw ? JSON.parse(raw) : [];
 }
 
@@ -144,8 +158,8 @@ function addLoading() {
   return msg;
 }
 
-function renderHistory() {
-  const history = loadHistory();
+function renderHistory(username) {
+  const history = loadHistory(username);
   if (history.length === 0) return;
   const divider = document.createElement("div");
   divider.className = "divider";
@@ -173,9 +187,9 @@ async function sendQuestion() {
   const time = getTime();
   addMessageToDOM(question, "user", null, time);
   questionInput.value = "";
-  const history = loadHistory();
+  const history = loadHistory(session.username);
   history.push({ text: question, type: "user", sources: null, time });
-  saveHistory(history);
+  saveHistory(session.username, history);
   const loader = addLoading();
   try {
     const response = await fetch(`${API_BASE}/ask`, {
@@ -196,7 +210,7 @@ async function sendQuestion() {
     const answerTime = getTime();
     addMessageToDOM(data.answer, "bot", data.sources, answerTime);
     history.push({ text: data.answer, type: "bot", sources: data.sources, time: answerTime });
-    saveHistory(history);
+    saveHistory(session.username, history);
   } catch (err) {
     loader.remove();
     addMessageToDOM("Could not connect to the knowledge base. Try again.", "bot");
